@@ -1,1 +1,0 @@
-Almost-A-Circle Description
