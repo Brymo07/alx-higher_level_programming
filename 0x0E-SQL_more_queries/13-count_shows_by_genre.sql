@@ -9,3 +9,4 @@ SELECT g.`name` AS `genre`,
        ON g.`id` = t.`genre_id`
  GROUP BY g.`name`
  ORDER BY `number_of_shows` DESC;
+ 
