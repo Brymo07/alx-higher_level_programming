@@ -8,15 +8,19 @@ import sys
 
 
 if __name__ == "__main__":
-    try:
-        repo = sys.argv[1]
-        owner = sys.argv[2]
-        url = 'https://api.github.com/repos/{}/{}/commits'.format(owner, repo)
-        r = get(url)
-        json_o = r.json()
-        for i in range(0, 10):
-            print("{}: {}".format(json_o[i].get('sha'), json_o[i].get('commit')
-                                  .get('author').get('name')))
-    except:
-        pass
+    repo = sys.argv[1]
+    owner = sys.argv[2]
+    url = f'https://api.github.com/repos/{owner}/{repo}/commits'
 
+    params = {'author': 'rails'}
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        commits = response.json()[:10]  # get the 10 most recent commits
+        for commit in commits:
+            sha = commit['sha']
+            author = commit['commit']['author']['name']
+            print(f'{sha}: {author}')
+    else:
+        print(f'Request failed with status code {response.status_code}')
