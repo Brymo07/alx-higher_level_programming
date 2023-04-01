@@ -1,26 +1,23 @@
 #!/usr/bin/python3
+"""Lists the 10 most recent commits on a given GitHub repository.
+Usage: ./100-github_commits.py <repository name> <repository owner>
 """
-Python script that shows the last 10 commits of a repository
-in GitHub
-"""
-from requests import get, auth
 import sys
+import requests
 
 
 if __name__ == "__main__":
-    repo = sys.argv[1]
-    owner = sys.argv[2]
-    url = f'https://api.github.com/repos/{owner}/{repo}/commits'
+    url = "https://api.github.com/repos/{}/{}/commits".format(
+        sys.argv[2], sys.argv[1])
 
-    params = {'author': 'rails'}
-    headers = {'Accept': 'application/vnd.github.v3+json'}
-    response = requests.get(url, headers=headers, params=params)
+    headers = {'Authorization': 'token YOUR_AUTH_TOKEN_HERE'}
+    r = requests.get(url, headers=headers)
+    commits = r.json()
+    try:
+        for i in range(10):
+            print("{}: {}".format(
+                commits[i].get("sha"),
+                commits[i].get("commit").get("author").get("name")))
+    except IndexError:
+        pass
 
-    if response.status_code == 200:
-        commits = response.json()[:10]  # get the 10 most recent commits
-        for commit in commits:
-            sha = commit['sha']
-            author = commit['commit']['author']['name']
-            print(f'{sha}: {author}')
-    else:
-        print(f'Request failed with status code {response.status_code}')
