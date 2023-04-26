@@ -1,28 +1,18 @@
+#!/usr/bin/node
+
 const request = require('request');
 const fs = require('fs');
-
 const url = process.argv[2];
-const filePath = process.argv[3];
+const file = process.argv[3];
 
-request.get(url, (error, response, body) => {
+request(url, (error, response, body) => {
   if (error) {
-    console.log(`Error: ${error}`);
-    return;
+    console.log(error);
+  } else {
+    fs.writeFile(file, body, 'utf8', (error) => {
+      if (error) {
+        console.log(error);
+      }
+    });
   }
-
-  const { statusCode } = response;
-
-  if (statusCode !== 200) {
-    console.log(`Error: Request failed with status code ${statusCode}`);
-    return;
-  }
-
-  fs.writeFile(filePath, body, 'utf-8', (error) => {
-    if (error) {
-      console.log(`Error: ${error}`);
-      return;
-    }
-
-    console.log(`The contents of ${url} have been saved to ${filePath}.`);
-  });
 });
