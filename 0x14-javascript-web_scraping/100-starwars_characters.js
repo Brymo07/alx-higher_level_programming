@@ -2,36 +2,26 @@
 
 const request = require('request');
 
-const movieId = process.argv[2];
-const url = `https://swapi.dev/api/films/${movieId}/`;
+const movieID = process.argv[2];
+const url = `https://swapi.dev/api/films/${movieID}/`;
 
-request.get(url, { json: true }, (error, response, data) => {
+request.get(url, (error, response, body) => {
   if (error) {
     console.log(error);
     return;
   }
 
+  const data = JSON.parse(body);
   const characters = data.characters;
-  const characterNames = [];
+  characters.forEach((character) => {
+    request.get(character, (error, response, body) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
 
-  const getCharacterName = (url) => {
-    return new Promise((resolve, reject) => {
-      request.get(url, { json: true }, (error, response, data) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data.name);
-        }
-      });
+      const characterData = JSON.parse(body);
+      console.log(characterData.name);
     });
-  };
-
-  const promises = characters.map((character) => getCharacterName(character));
-  Promise.all(promises)
-    .then((names) => {
-      console.log(names.join("\n"));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  });
 });
